@@ -104,20 +104,6 @@ contract:
 
 §§ 1–3, 11 and 12 are ordinary clauses and should not be flagged.
 
-## What I'd do differently
-
-- **Validate the model output with the Pydantic schema** that already exists in
-  `models/schemas.py`, and retry on invalid JSON instead of returning a 500.
-- **Use the async Anthropic client** — the endpoints are `async`, but the SDK
-  calls are synchronous and block the event loop during analysis.
-- **Handle long contracts explicitly.** PDF text is cut at 15,000 characters;
-  the end of a long contract should be chunked or at least flagged, not silently
-  dropped.
-- **Tighten CORS** from `*` to the frontend origin, and add a Docker Compose
-  setup so the two services start with one command.
-- **Build a test set of annotated contracts** with known illegal clauses to
-  measure how many the analysis actually catches.
-
 ## Stack
 
 Next.js · React · TypeScript · Tailwind CSS · Python · FastAPI · PyMuPDF · Pillow ·
@@ -127,6 +113,19 @@ Pydantic · Anthropic Claude (text + vision)
 
 MVP. It ran publicly on Railway; hosting is currently paused, so there is no live
 demo right now. The code runs locally as described above.
+
+## Roadmap
+
+- **Live demo again** — redeploy with per-IP rate limiting so the sample contract
+  can be tried in the browser.
+- **One-command setup** — Docker Compose for the frontend and the AI service.
+- **Schema-validated responses** — validate model output against the Pydantic
+  models with automatic retry on malformed JSON.
+- **Concurrent analyses** — move to the async Anthropic client.
+- **Long contracts** — section-aware processing for documents beyond
+  15,000 characters of extracted text.
+- **Detection benchmark** — a set of annotated contracts to measure how many
+  invalid clauses the analysis finds.
 
 > Not legal advice — results are informational and do not replace a lawyer or a
 > tenants' association.
